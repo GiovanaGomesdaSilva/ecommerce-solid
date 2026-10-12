@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import { getMailClient } from '../lib/mail';
 import nodemailer from 'nodemailer';
 import logger from '../lib/logger';
+// adicionado O ProducFactory
+import { ProductFactory } from '../domain/ProductFactory';
 
 const prisma = new PrismaClient();
 
@@ -34,15 +36,20 @@ export class OrderController {
         // Violação de LSP e OCP: 
         // Lógica condicional baseada em "tipo" (String). 
         // Se adicionarmos "Serviço" ou "Assinatura", teremos que mexer aqui.
-        if (product.type === 'physical') {
-          totalAmount += product.price * item.quantity;
+        //if (product.type === 'physical') {
+         // totalAmount += product.price * item.quantity;
           // Frete fixo simples
-          totalAmount += 10; 
-        } else if (product.type === 'digital') {
-           totalAmount += product.price * item.quantity;
+         // totalAmount += 10; 
+        //} else if (product.type === 'digital') {
+       //    totalAmount += product.price * item.quantity;
            // Produtos digitais não deveriam ter frete, ok.
            // Mas se o aluno tentar tratar 'item' genericamente depois, vai ter problemas.
-        }
+        //}
+
+        // Agora, cada produto calcula seu próprio frete sem o if de tipo
+        const domainProduct = ProductFactory.createProduct(product);
+        totalAmount += domainProduct.price * item.quantity;
+        totalAmount += domainProduct.calculateFreight();
 
         productsDetails.push({ ...product, quantity: item.quantity });
       }
