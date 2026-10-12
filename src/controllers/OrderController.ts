@@ -5,6 +5,8 @@ import nodemailer from 'nodemailer';
 import logger from '../lib/logger';
 // adicionado O ProducFactory
 import { ProductFactory } from '../domain/ProductFactory';
+// adicionando o PaymentFactory
+import { PaymentFactory } from '../payments/PaymentFactory';
 
 const prisma = new PrismaClient();
 
@@ -56,7 +58,7 @@ export class OrderController {
 
       // 3. PROCESSAMENTO DE PAGAMENTO (Violação de OCP)
       // Se quisermos adicionar "Pix", temos que modificar essa classe.
-      if (paymentMethod === 'credit_card') {
+     /* if (paymentMethod === 'credit_card') {
         logger.info(`Processando cartão final ${paymentDetails.cardNumber.slice(-4)}`);
         // Simulação de gateway
         if (paymentDetails.cvv === '000') throw new Error('Cartão recusado');
@@ -67,6 +69,12 @@ export class OrderController {
       } else {
         return res.status(400).json({ error: 'Método de pagamento não suportado' });
       }
+    */
+      const payment = PaymentFactory.createPayment(paymentMethod);
+      if(!payment){
+        return res.status(400).json({ error: 'Método de pagamento não suportado' });
+      }
+      payment.process(totalAmount, paymentDetails);
 
       // 4. PERSISTÊNCIA (Violação de SRP - Controller acessando Banco) 
       const order = await prisma.order.create({
