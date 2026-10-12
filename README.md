@@ -1,16 +1,5 @@
 # E-commerce Refatorado com SOLID
 
-## Como rodar
-
-```bash
-npm install
-npm run prisma:migrate
-npm run prisma:seed
-npm run dev
-```
-
-O servidor inicia em `http://localhost:3000`.
-
 ## Refatoração
 
 - O `OrderController` só cuida de HTTP, e a lógica do pedido fica no `OrderService`.
