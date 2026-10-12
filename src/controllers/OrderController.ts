@@ -1,19 +1,21 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { getMailClient } from '../lib/mail';
-import nodemailer from 'nodemailer';
+//import { getMailClient } from '../lib/mail';
+//import nodemailer from 'nodemailer';
 import logger from '../lib/logger';
 // adicionado O ProducFactory
 import { ProductFactory } from '../domain/ProductFactory';
 // adicionando o PaymentFactory
 import { PaymentFactory } from '../payments/PaymentFactory';
 //adicionando as notificações e o provider
-import { NotificationService } from '../providers/NotificationService';
+import { NotificationService } from '../services/NotificationService';
 import { EtherealMailProvider } from '../providers/EtherealMailProvider';
+import { PrismaOrderRepository } from '../repositories/PrismaOrderRepository';
+
 
 const prisma = new PrismaClient();
 const notificationService = new NotificationService(new EtherealMailProvider());
-
+const orderRepository = new PrismaOrderRepository(prisma);
 // Lembram do God Class q falamos em aula? Este é um exemplo
 export class OrderController {
   
@@ -33,8 +35,7 @@ export class OrderController {
       let productsDetails = [];
 
       for (const item of items) {
-        const product = await prisma.product.findUnique({ where: { id: item.productId } });
-        
+        const product = await orderRepository.findProduct(item.productId);        
         if (!product) {
           return res.status(400).json({ error: `Produto ${item.productId} não encontrado` });
         }
@@ -80,7 +81,7 @@ export class OrderController {
       }
       payment.process(totalAmount, paymentDetails);
 
-      // 4. PERSISTÊNCIA (Violação de SRP - Controller acessando Banco) 
+      /* 4. PERSISTÊNCIA (Violação de SRP - Controller acessando Banco) 
       const order = await prisma.order.create({
         data: {
           customer,
@@ -89,6 +90,8 @@ export class OrderController {
           status: 'confirmed'
         }
       });
+      */
+      const orderId = await orderRepository.create(customer, JSON.stringify(productsDetails), totalAmount, 'confirmed')
 
       // 5. NOTIFICAÇÃO (Violação de SRP - Efeitos colaterais no Controller) 
      /* const mailer = await getMailClient();
@@ -108,9 +111,9 @@ export class OrderController {
         `,
       });
       */
+     
 
-      const emailLink = await notificationService.sendOrderConfirmation(customer, order.id, totalAmount, productsDetails);
-
+      const emailLink = await notificationService.sendOrderConfirmation(customer, orderId, totalAmount, productsDetails);
       // use este link para visualizar no Ethereal
      // logger.info(`Email enviado: ${nodemailer.getTestMessageUrl(info)}`); 
 
@@ -118,7 +121,7 @@ export class OrderController {
 
       return res.json({ 
         message: 'Pedido processado com sucesso', 
-        orderId: order.id,
+        orderId: orderId,
         //emailPreview: nodemailer.getTestMessageUrl(info) // Retorna o link na API para facilitar
         emailPreview: emailLink
       });

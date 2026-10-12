@@ -1,5 +1,5 @@
 import { constrainedMemory } from "process";
-import { IMailProvider } from "./IMailProvider";
+import { IMailProvider } from "../providers/IMailProvider";
 
 export class NotificationService {
     mailProvider: IMailProvider;
