@@ -1,4 +1,4 @@
-import { IOrderRepository } from '../repositories/IOrderRepository.ts';
+import { IOrderRepository } from '../repositories/IOrderRepository';
 import { NotificationService } from './NotificationService';
 import { ProductFactory } from '../domain/ProductFactory';
 import { PaymentFactory } from '../payments/PaymentFactory';

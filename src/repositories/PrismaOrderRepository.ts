@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { IOrderRepository } from './IOrderRepository.ts'; 
+import { IOrderRepository } from './IOrderRepository'; 
 
 export class PrismaOrderRepository implements IOrderRepository {
   prisma: PrismaClient;
