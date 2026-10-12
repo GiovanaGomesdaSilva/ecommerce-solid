@@ -1,16 +1,5 @@
 import { Request, Response } from 'express';
-//import { PrismaClient } from '@prisma/client';
-//import { getMailClient } from '../lib/mail';
-//import nodemailer from 'nodemailer';
 import logger from '../lib/logger';
-// adicionado O ProducFactory
-//import { ProductFactory } from '../domain/ProductFactory';
-// adicionando o PaymentFactory
-//import { PaymentFactory } from '../payments/PaymentFactory';
-//adicionando as notificações e o provider
-//import { NotificationService } from '../services/NotificationService';
-//import { EtherealMailProvider } from '../providers/EtherealMailProvider';
-//import { PrismaOrderRepository } from '../repositories/PrismaOrderRepository';
 import { OrderService } from '../services/OrderService';
 
 export class OrderController{
