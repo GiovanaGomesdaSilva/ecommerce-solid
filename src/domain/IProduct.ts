@@ -2,6 +2,6 @@
 export interface IProduct {
     id: number;
     name: string;
-    prince: number;
+    price: number;
     calculateFreight(): number;
 }

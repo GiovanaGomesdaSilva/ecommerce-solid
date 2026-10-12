@@ -14,7 +14,7 @@ export class ProductFactory {
         if(data.type === 'physical'){
             return new PhysicalProduct(data.id, data.name, data.price);
         }
-         if(data.type === 'ditial'){
+         if(data.type === 'digital'){
             return new DigitalProduct(data.id, data.name, data.price);
         }
         throw new Error(`Tipo de produto não reconhecido: ${data.type}`);
