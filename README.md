@@ -13,7 +13,7 @@ O servidor inicia em `http://localhost:3000`.
 
 ## Refatoração
 
-- Cada classe faz uma coisa só. O `OrderController` só cuida de HTTP, e a lógica do pedido fica no `OrderService`.
+- O `OrderController` só cuida de HTTP, e a lógica do pedido fica no `OrderService`.
 - Cada forma de pagamento tem uma classe própria, conseguimos add o Pix sem modificar as demais. 
 - Cada produto cálcula o próprio frete.
 - Cada interface com a sua função.
