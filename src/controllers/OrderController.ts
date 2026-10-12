@@ -7,8 +7,12 @@ import logger from '../lib/logger';
 import { ProductFactory } from '../domain/ProductFactory';
 // adicionando o PaymentFactory
 import { PaymentFactory } from '../payments/PaymentFactory';
+//adicionando as notificações e o provider
+import { NotificationService } from '../providers/NotificationService';
+import { EtherealMailProvider } from '../providers/EtherealMailProvider';
 
 const prisma = new PrismaClient();
+const notificationService = new NotificationService(new EtherealMailProvider());
 
 // Lembram do God Class q falamos em aula? Este é um exemplo
 export class OrderController {
@@ -87,7 +91,7 @@ export class OrderController {
       });
 
       // 5. NOTIFICAÇÃO (Violação de SRP - Efeitos colaterais no Controller) 
-      const mailer = await getMailClient();
+     /* const mailer = await getMailClient();
 
       const info = await mailer.sendMail({
         from: '"DevStore" <noreply@devstore.com>',
@@ -103,14 +107,20 @@ export class OrderController {
           </ul>
         `,
       });
+      */
+
+      const emailLink = await notificationService.sendOrderConfirmation(customer, order.id, totalAmount, productsDetails);
 
       // use este link para visualizar no Ethereal
-      logger.info(`Email enviado: ${nodemailer.getTestMessageUrl(info)}`); 
+     // logger.info(`Email enviado: ${nodemailer.getTestMessageUrl(info)}`); 
+
+
 
       return res.json({ 
         message: 'Pedido processado com sucesso', 
         orderId: order.id,
-        emailPreview: nodemailer.getTestMessageUrl(info) // Retorna o link na API para facilitar
+        //emailPreview: nodemailer.getTestMessageUrl(info) // Retorna o link na API para facilitar
+        emailPreview: emailLink
       });
 
     } catch (error: any) {
